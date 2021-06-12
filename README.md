@@ -1,8 +1,8 @@
-# Getting Started with Create React App
+# URL Shortener project
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-The project has a `server` project that handles the url shortener and redirects the user the the `long url`
+The project has a nested `server` project that handles the url shortener and redirects the user the the `long url`
 React is used to display the form.
 
 ## Requirements
