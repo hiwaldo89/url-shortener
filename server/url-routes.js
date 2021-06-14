@@ -1,39 +1,69 @@
 import express from "express";
+import base58 from "base58";
 
-import { getUrls, saveUrl, getUrlById } from "./services"
+import Url from "./models/url";
 
 const router = express.Router();
 
-router.post('/shorten', async (req, res) => {
+/**
+ * @swagger
+ * /api/shorten:
+ *  post:
+ *    description: Create a short version of a url
+ *    parameters:
+ *    - name: url
+ *      description: Url to shorten
+ *      in: formData
+ *      required: true
+ *      type: string
+ *    responses:
+ *      201:
+ *        description: Url shortened
+ */
+router.post("/shorten", (req, res) => {
   const { url } = req.body;
+  let shortUrl = "";
 
-  try {
-    const storedUrls = await getUrls();
-    const existingUrl = storedUrls[url];
-    if (existingUrl) {
-      res.send(existingUrl);
+  Url.findOne({ long_url: url }, async (_err, doc) => {
+    if (doc) {
+      shortUrl = base58.int_to_base58(doc._id);
     } else {
-      const savedUrl = await saveUrl(url);
-      res.send(savedUrl);
+      const newUrl = Url({
+        long_url: url,
+      });
+      const savedUrl = await newUrl.save();
+      shortUrl = base58.int_to_base58(savedUrl._id);
     }
-  } catch (err) {
-    throw err
-  }
+    res.send({ shortUrl });
+  });
 });
 
-router.get('/:id', async (req, res) => {
+/**
+ * @swagger
+ * /api/{id}:
+ *  get:
+ *    description: Redirects to the long url
+ *    parameters:
+ *    - name: id
+ *      description: The short url id
+ *      in: path
+ *      required: true
+ *      type: string
+ *    response:
+ *      302:
+ *        description: Redirected to long url
+ */
+router.get("/:id", async (req, res) => {
   const { id } = req.params;
+  const decodedId = base58.base58_to_int(id);
 
-  try {
-    const foundUrl = await getUrlById(id);
-    if (foundUrl) {
-      res.redirect(foundUrl.longUrl);
+  Url.findOne({ _id: decodedId }, (_err, url) => {
+    if (url) {
+      res.redirect(url.long_url);
     } else {
-      res.status(404).json("Not a valid url");
+      res.redirect("/");
     }
-  } catch (err) {
-    throw err;
-  }
+  });
 });
 
 export default router;
