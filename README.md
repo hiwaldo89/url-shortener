@@ -12,7 +12,7 @@ React is used to display the form.
 
 ## API Docs
 
-You can view available endpoints [here](http://localhost:5000/api-docs)
+You can view available endpoints at [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
 
 ## Run the project
 
