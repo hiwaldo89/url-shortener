@@ -1,18 +1,17 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
 import app from "./app";
 import Counter from "./models/counter";
 
 const PORT = 5000;
+dotenv.config();
 
 mongoose
-  .connect(
-    "mongodb+srv://hiwaldo89:aIoGUiU5rsfS7gmW@cluster0.5ouxi.mongodb.net/urlShortener?retryWrites=true&w=majority",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
+  .connect(`${process.env.MONGO_PROD_URL}`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     Counter.findById("url_count", (err, counter) => {
       if (!counter) {

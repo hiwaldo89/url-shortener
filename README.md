@@ -7,7 +7,8 @@ React is used to display the form.
 
 ## Requirements
 
-Node >= 10
+- Node >= 10
+- Copy the `.env.example` file to `.env` and add a MongoDB connection string
 
 ## API Docs
 
